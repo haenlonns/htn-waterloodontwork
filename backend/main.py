@@ -2,14 +2,10 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 from employers import manageEmployer
+import manageApplicants
 
-# Replace the placeholder with your Atlas connection string
 uri = "mongodb+srv://our-first-user:1sJ4VFKtpAss1eEZ@cluster0.za0rs94.mongodb.net/waterloodontwork?retryWrites=true&w=majority"
-
-# Set the Stable API version when creating a new client
 client = MongoClient(uri, server_api=ServerApi('1'))
-                        
-# Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
@@ -29,8 +25,10 @@ job = {
 }
 job_id = jobs.insert_one(job).inserted_id
 
-employerA = manageEmployer.createEmployer("Apple", "dummy@gmail.com", "Small Indie Tech Company", "apple.com", [], {"Intern": job_id})
+employerA = manageEmployer.createEmployer("Apple", "dummy@gmail.com", "Small Indie Tech Company", "apple.com", [], [job_id])
 employer_id = employers.insert_one(employerA).inserted_id
+employerA = manageEmployer.createEmployer("Tangerine", "dummy@gmail.com", "Small Indie Tech Company", "apple.com", [], [job_id])
+employers.replace_one({"_id": employer_id}, employerA)
 
 print(job_id)
 print(employer_id)
