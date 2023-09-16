@@ -44,6 +44,9 @@ const users = [
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitDirection, setExitDirection] = useState<number | undefined>();
+const [forceSwipeDirection, setForceSwipeDirection] = useState<
+  "Left" | "Right" | undefined
+>(undefined);
 
   const onSwiped = (direction: string) => {
     if (direction === "Left" || direction === "Right") {
@@ -62,11 +65,11 @@ const Home = () => {
     }, 500);
   };
   const handleButtonClick = (direction: "Left" | "Right") => {
-    if (direction === "Left") {
-      setExitDirection(-1);
-    } else {
-      setExitDirection(1);
-    }
+    setForceSwipeDirection(direction);
+    setTimeout(() => {
+      onSwiped(direction);
+      setForceSwipeDirection(undefined);
+    }, 500);
   };
 
    return (
@@ -87,6 +90,7 @@ const Home = () => {
            image={users[currentIndex].image}
            onSwiped={handleSwipe}
            exitDirection={exitDirection}
+           forceSwipe={forceSwipeDirection}
          />
        )}
 
@@ -95,7 +99,7 @@ const Home = () => {
            <span style={{ color: "white " }}>✖</span>
          </SwipeButton>
          <SwipeButton color="green" onClick={() => handleButtonClick("Right")}>
-           <span style={{ color: "white "}}>✓</span>
+           <span style={{ color: "white " }}>✓</span>
          </SwipeButton>
        </ButtonContainer>
      </div>

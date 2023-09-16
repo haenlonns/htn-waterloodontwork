@@ -40,6 +40,7 @@ type CardProps = {
   name: string;
   onSwiped: (direction: "Left" | "Right") => void;
   exitDirection?: number; // New prop
+  forceSwipe?: "Left" | "Right"; // New prop
 };
 
 const Card: React.FC<CardProps> = ({
@@ -47,30 +48,38 @@ const Card: React.FC<CardProps> = ({
   name,
   onSwiped,
   exitDirection,
+  forceSwipe,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
-const [animationState, setAnimationState] = useState("enter");
+  const [animationState, setAnimationState] = useState("enter");
 
+  useEffect(() => {
+    if (forceSwipe) {
+      if (forceSwipe === "Left") {
+        setAnimationState("exitLeft");
+      } else {
+        setAnimationState("exitRight");
+      }
+    }
+  }, [forceSwipe]);
 
+  const animationVariants = {
+    enter: { opacity: 1, y: 0 },
+    exitLeft: { opacity: 0, x: -1000 },
+    exitRight: { opacity: 0, x: 1000 },
+  };
 
-
-const animationVariants = {
-  enter: { opacity: 1, y: 0 },
-  exitLeft: { opacity: 0, x: -1000 },
-  exitRight: { opacity: 0, x: 1000 },
-};
-
-const handlers = useSwipeable({
-  onSwipedLeft: () => {
-    setAnimationState("exitLeft");
-    setTimeout(() => onSwiped("Left"), 500);
-  },
-  onSwipedRight: () => {
-    setAnimationState("exitRight");
-    setTimeout(() => onSwiped("Right"), 500);
-  },
-  trackMouse: true,
-});
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      setAnimationState("exitLeft");
+      setTimeout(() => onSwiped("Left"), 500);
+    },
+    onSwipedRight: () => {
+      setAnimationState("exitRight");
+      setTimeout(() => onSwiped("Right"), 500);
+    },
+    trackMouse: true,
+  });
 
   return (
     <motion.div
