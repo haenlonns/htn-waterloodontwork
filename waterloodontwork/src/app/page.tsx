@@ -28,6 +28,47 @@ const SwipeButton = styled.button<{ color: string }>`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
+const Navbar = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+`;
+
+const ProfileButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`;
+
+const ProfileImage = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+`;
+
+const Dropdown = styled.div<{ isOpen: boolean }>`
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  position: absolute;
+  right: 0;
+  top: 60px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px 15px;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
 
 const users = [
   {
@@ -44,9 +85,11 @@ const users = [
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitDirection, setExitDirection] = useState<number | undefined>();
-const [forceSwipeDirection, setForceSwipeDirection] = useState<
-  "Left" | "Right" | undefined
->(undefined);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State to control dropdown visibility
+
+  const [forceSwipeDirection, setForceSwipeDirection] = useState<
+    "Left" | "Right" | undefined
+  >(undefined);
 
   const onSwiped = (direction: string) => {
     if (direction === "Left" || direction === "Right") {
@@ -72,38 +115,49 @@ const [forceSwipeDirection, setForceSwipeDirection] = useState<
     }, 500);
   };
 
-   return (
-     <div
-       style={{
-         display: "flex",
-         flexDirection: "column",
-         justifyContent: "center",
-         alignItems: "center",
-         height: "100vh",
-         position: "relative",
-       }}
-     >
-       {currentIndex < users.length && (
-         <Card
-           key={currentIndex}
-           name={users[currentIndex].name}
-           image={users[currentIndex].image}
-           onSwiped={handleSwipe}
-           exitDirection={exitDirection}
-           forceSwipe={forceSwipeDirection}
-         />
-       )}
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        position: "relative",
+      }}
+    >
+      <Navbar>
+        <ProfileButton onClick={() => setDropdownOpen(!dropdownOpen)}>
+          <ProfileImage src="/path/to/jane-doe-image.jpg" alt="Jane Doe" />
+          Jane Doe
+        </ProfileButton>
+        <Dropdown isOpen={dropdownOpen}>
+          <DropdownItem>View Profile</DropdownItem>
+          <DropdownItem>Logout</DropdownItem>
+        </Dropdown>
+      </Navbar>
 
-       <ButtonContainer>
-         <SwipeButton color="red" onClick={() => handleButtonClick("Left")}>
-           <span style={{ color: "white " }}>✖</span>
-         </SwipeButton>
-         <SwipeButton color="green" onClick={() => handleButtonClick("Right")}>
-           <span style={{ color: "white " }}>✓</span>
-         </SwipeButton>
-       </ButtonContainer>
-     </div>
-   );
+      {currentIndex < users.length && (
+        <Card
+          key={currentIndex}
+          name={users[currentIndex].name}
+          image={users[currentIndex].image}
+          onSwiped={handleSwipe}
+          exitDirection={exitDirection}
+          forceSwipe={forceSwipeDirection}
+        />
+      )}
+
+      <ButtonContainer>
+        <SwipeButton color="red" onClick={() => handleButtonClick("Left")}>
+          <span style={{ color: "white " }}>✖</span>
+        </SwipeButton>
+        <SwipeButton color="green" onClick={() => handleButtonClick("Right")}>
+          <span style={{ color: "white " }}>✓</span>
+        </SwipeButton>
+      </ButtonContainer>
+    </div>
+  );
 };
 
 export default Home;
