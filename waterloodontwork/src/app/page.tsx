@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useState } from "react";
 import Card from "./components/card";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, color } from "framer-motion";
 import styled from "styled-components";
 
 const ButtonContainer = styled.div`
@@ -51,45 +51,55 @@ const Home = () => {
     }
   };
   const handleSwipe = (direction: "Left" | "Right") => {
-    setExitDirection(direction === "Left" ? -1 : 1);
+    if (direction === "Left") {
+      setExitDirection(-1);
+    } else {
+      setExitDirection(1);
+    }
     setTimeout(() => {
       onSwiped(direction);
       setExitDirection(undefined);
     }, 500);
   };
+  const handleButtonClick = (direction: "Left" | "Right") => {
+    if (direction === "Left") {
+      setExitDirection(-1);
+    } else {
+      setExitDirection(1);
+    }
+  };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        position: "relative",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
-      {currentIndex < users.length && (
-        <Card
-          key={currentIndex}
-          name={users[currentIndex].name}
-          image={users[currentIndex].image}
-          onSwiped={handleSwipe}
-          exitDirection={exitDirection}
-        />
-      )}
+   return (
+     <div
+       style={{
+         display: "flex",
+         flexDirection: "column",
+         justifyContent: "center",
+         alignItems: "center",
+         height: "100vh",
+         position: "relative",
+       }}
+     >
+       {currentIndex < users.length && (
+         <Card
+           key={currentIndex}
+           name={users[currentIndex].name}
+           image={users[currentIndex].image}
+           onSwiped={handleSwipe}
+           exitDirection={exitDirection}
+         />
+       )}
 
-      <ButtonContainer>
-        <SwipeButton color="red" onClick={() => handleSwipe("Left")}>
-          ❌
-        </SwipeButton>
-        <SwipeButton color="green" onClick={() => handleSwipe("Right")}>
-          ❤️
-        </SwipeButton>
-      </ButtonContainer>
-    </div>
-  );
+       <ButtonContainer>
+         <SwipeButton color="red" onClick={() => handleButtonClick("Left")}>
+           <span style={{ color: "white " }}>✖</span>
+         </SwipeButton>
+         <SwipeButton color="green" onClick={() => handleButtonClick("Right")}>
+           <span style={{ color: "white "}}>✓</span>
+         </SwipeButton>
+       </ButtonContainer>
+     </div>
+   );
 };
 
 export default Home;
