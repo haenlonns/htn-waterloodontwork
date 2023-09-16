@@ -1,5 +1,3 @@
-from jobPostings import jobClass
-
 # jobs should reference ID
 def createEmployer(name: str, verEmail: str, description: str, website: str, socials, jobs: set[str]):
   employer = {
@@ -11,6 +9,9 @@ def createEmployer(name: str, verEmail: str, description: str, website: str, soc
             "jobs": jobs
         }
   
+
+  
   return employer
-        
+
+
 
