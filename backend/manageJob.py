@@ -1,10 +1,12 @@
-def createJob(db, jobData, employerID) -> str:
+from configure import db
+
+def createJob(jobData, employerID) -> str:
     jobs = db.jobs
     jobID = jobs.insert_one(jobData).inserted_id
     jobs.update_one({"_id": jobID}, {"$set": {"employerID": employerID}})
     return jobID
 
-def deleteJob(db, jobID) -> None:
+def deleteJob(jobID) -> None:
     jobs = db.jobs
     job = jobs.find_one({"_id": jobID})
     applicants = db.applicants
@@ -20,6 +22,6 @@ def deleteJob(db, jobID) -> None:
 
     jobs.delete_one({"_id": jobID})
 
-def getJob(db, jobID):
+def getJob(jobID):
     jobs = db.jobs
     return jobs.find_one({"_id": jobID})

@@ -1,30 +1,31 @@
+from configure import db
 import manageResponses
 
-def createApplicant(db, applicantData) -> str:
+def createApplicant(applicantData) -> str:
     applicants = db.applicants
     applicantID = applicants.insert_one(applicantData).inserted_id
     applicants.update_one({"_id": applicantID}, {"$set": {"jobList": []}}, upsert=True)
     return applicantID
 
-def deleteApplicant(db, applicantID) -> None:
+def deleteApplicant(applicantID) -> None:
     applicants = db.applicants
     applicant = applicants.find_one({"_id": applicantID})
 
     applicantAppliedList = applicant["appliedList"]
     for jobID in applicantAppliedList:
-        withdrawJob(db, applicantID, jobID)
+        withdrawJob(applicantID, jobID)
     
     applicantJobList = applicant["jobList"]
     for jobID in applicantJobList:
-        rejectJob(db, applicantID, jobID)
+        rejectJob(applicantID, jobID)
 
     applicants.delete_one({"_id": applicantID})
 
-def getApplicant(db, applicantID):
+def getApplicant(applicantID):
     applicants = db.applicants
     return applicants.find_one({"_id": applicantID})
 
-def writeJobList(db, applicantID) -> None:
+def writeJobList(applicantID) -> None:
     jobs = db.jobs
     aggregateList = list(jobs.aggregate([{"$project": {"_id": 1}}]))
     jobIDList = [job["_id"] for job in aggregateList]
@@ -47,11 +48,11 @@ def writeJobList(db, applicantID) -> None:
     
     applicants.update_one({"_id": applicantID}, {"$set": {"jobList": applicantJobList}})
 
-def applyJob(db, responseData, applicantID, jobID) -> None:
+def applyJob(responseData, applicantID, jobID) -> str:
     applicants = db.applicants
     jobs = db.jobs
 
-    responseID = manageResponses.createResponse(db, responseData, applicantID, jobID)
+    responseID = manageResponses.createResponse(responseData, applicantID, jobID)
     applicants.update_one({"_id": applicantID}, {"$push": {"responseList": responseID}})
 
     applicants.update_one({"_id": applicantID}, {"$push": {"appliedList": jobID}})
@@ -60,7 +61,9 @@ def applyJob(db, responseData, applicantID, jobID) -> None:
     jobs.update_one({"_id": jobID}, {"$push": {"applicants": applicantID}})
     jobs.update_one({"_id": jobID}, {"$pull": {"candidates": applicantID}})
 
-def rejectJob(db, applicantID, jobID) -> None:
+    return responseID
+
+def rejectJob(applicantID, jobID) -> None:
     applicants = db.applicants
     jobs = db.jobs
 
@@ -68,7 +71,7 @@ def rejectJob(db, applicantID, jobID) -> None:
 
     jobs.update_one({"_id": jobID}, {"$pull": {"candidates": applicantID}})
 
-def withdrawJob(db, applicantID, jobID) -> None:
+def withdrawJob(applicantID, jobID) -> None:
     applicants = db.applicants
     jobs = db.jobs
 
@@ -79,7 +82,7 @@ def withdrawJob(db, applicantID, jobID) -> None:
     applicantResponseIDSet = set(applicant["responseList"])
 
     responseID = set.intersection(responseIDSet, applicantResponseIDSet).pop()
-    manageResponses.deleteResponse(db, responseID)
+    manageResponses.deleteResponse(responseID)
 
     applicants.update_one({"_id": applicantID}, {"$pull": {"appliedList": jobID}})
     applicants.update_one({"_id": applicantID}, {"$push": {"jobList": jobID}})

@@ -1,4 +1,6 @@
-def createResponse(db, responseData, applicantID, jobID) -> str:
+from configure import db
+
+def createResponse(responseData, applicantID, jobID) -> str:
     responses = db.responses
     jobs = db.jobs
 
@@ -6,12 +8,13 @@ def createResponse(db, responseData, applicantID, jobID) -> str:
 
     responses.update_one({"_id": responseID}, {"$set": {"applicantID": applicantID}})
     responses.update_one({"_id": responseID}, {"$set": {"jobID": jobID}})
+    responses.update_one({"_id": responseID}, {"$set": {"status": "Pending"}})
 
     jobs.update_one({"_id": jobID}, {"$push": {"responses": responseID}})
 
     return responseID
 
-def deleteResponse(db, responseID) -> None:
+def deleteResponse(responseID) -> None:
     responses = db.responses
     applicants = db.applicants
     jobs = db.jobs
@@ -26,10 +29,10 @@ def deleteResponse(db, responseID) -> None:
 
     responses.delete_one({"_id": responseID})
 
-def getResponse(db, responseID):
+def getResponse(responseID):
     responses = db.responses
     return responses.find_one({"_id": responseID})
 
-def decideResponse(db, responseID, decision):
+def decideResponse(responseID, decision):
     responses = db.responses
     responses.update_one({"_id": responseID}, {"$set": {"status": decision}})
