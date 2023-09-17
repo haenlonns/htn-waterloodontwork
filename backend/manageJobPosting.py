@@ -7,3 +7,19 @@ def createJob(db, jobData, employerID) -> str:
 def updateJob(db, jobID, jobData) -> None:
     jobs = db.jobs
     jobs.replace_one({"_id": jobID}, jobData, upsert=True)
+
+def deleteJob(db, jobID) -> None:
+    jobs = db.jobs
+    job = jobs.find_one({"_id": jobID})
+    applicants = db.applicants
+
+    candidateList = job["candidates"]
+    applicantList = job["applicants"]
+
+    for applicantID in candidateList:
+        applicants.update_one({"_id": applicantID}, {"$pull": {"jobList": jobID}})
+    
+    for applicantID in applicantList:
+        applicants.update_one({"_id": applicantID}, {"$pull": {"appliedList": jobID}})
+
+    jobs.delete_one({"_id": jobID})
