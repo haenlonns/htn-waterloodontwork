@@ -73,10 +73,13 @@ def withdrawJob(db, applicantID, jobID) -> None:
     jobs = db.jobs
 
     job = jobs.find_one({"_id": jobID})
-    responseIDSet = job["responses"]
+    responseIDSet = set(job["responses"])
 
     applicant = applicants.find_one({"_id": applicantID})
-    applicantResponseIDSet = applicant["responseList"]
+    applicantResponseIDSet = set(applicant["responseList"])
+
+    responseID = set.intersection(responseIDSet, applicantResponseIDSet).pop()
+    manageResponses.deleteResponse(db, responseID)
 
     applicants.update_one({"_id": applicantID}, {"$pull": {"appliedList": jobID}})
     applicants.update_one({"_id": applicantID}, {"$push": {"jobList": jobID}})

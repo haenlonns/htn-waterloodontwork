@@ -9,6 +9,7 @@ from pymongo.server_api import ServerApi
 import manageApplicants
 import manageJob
 import manageEmployer
+import manageResponses
 import tools
 
 uri = "mongodb+srv://our-first-user:1sJ4VFKtpAss1eEZ@cluster0.za0rs94.mongodb.net/waterloodontwork?retryWrites=true&w=majority"
@@ -22,7 +23,9 @@ CORS(app)
 def close_mongodb_connection(exception=None):
     client.close()
 
-@app.route("/api/postApplicant", methods=["POST", "GET"])
+
+
+@app.route("/applicant/postApplicant", methods=["POST", "GET"])
 def getApplicantData():
     bsonData = request.data
     applicantData = bson.loads(bsonData)
@@ -30,14 +33,32 @@ def getApplicantData():
     manageApplicants.writeJobList(db, applicantID)
     return applicantID
 
-@app.route("/api/postEmployer", methods=["POST"])
+@app.route("/applicant/getJob", methods=["GET"])
+def postJobData():
+    jobID = request.data.decode('utf-8')
+    jobData = manageJob.getJob(db, jobID)
+    return jsonify(jobData)
+
+@app.route("/applicant/applyJob", methods=["POST"])
+def applyJob():
+    bsonData = request.data
+    designaledData = bson.loads(bsonData)
+    responseData = designaledData["responseData"]
+    applicantID = designaledData["applicantID"]
+    jobID = designaledData["jobID"]
+    manageApplicants.applyJob(db, responseData, applicantID, jobID)
+    return applicantID
+
+
+
+@app.route("/employer/postEmployer", methods=["POST"])
 def getEmployerData():
     bsonData = request.data
     employerData = bson.loads(bsonData)
     employerID = manageEmployer.createEmployer(db, employerData)
     return employerID
 
-@app.route("/api/postJob", methods=["POST"])
+@app.route("/employer/postJob", methods=["POST"])
 def getJobData():
     bsonData = request.data
     designaledData = bson.loads(bsonData)
@@ -46,13 +67,11 @@ def getJobData():
     jobID = manageEmployer.addJob(db, jobData, employerID)
     return jobID
 
-@app.route("/api/getJob", methods=["GET"])
-def postJobData():
-    jobID = request.data.decode('utf-8')
-    jobData = manageJob.getJob(db, jobID)
-    return jsonify(jobData)
-
-@app.route("/api/applyJob", methods=["POST"])
+@app.route("/employer/getResponse", methods=["GET"])]
+def postResponseData():
+    responseID = request.data.decode('utf-8')
+    responseData = manageResponses.getResponse(db, responseID)
+    return jsonify(responseData)
 
 if __name__ == '__main__':
     app.run(debug=True)
