@@ -6,6 +6,7 @@ import { useState } from "react";
 import Card from "./components/card";
 import { motion, AnimatePresence, color } from "framer-motion";
 import styled from "styled-components";
+import { UserProfile, ProfileModal } from "./UserProfile";
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -16,12 +17,11 @@ const ButtonContainer = styled.div`
   width: 100%;
 `;
 
-
 const SwipeButton = styled.button<{ color: string }>`
-  background-color: ${props => props.color};
+  background-color: ${(props) => props.color};
   border: none;
   border-radius: 50%;
-  width: 50px;  // Adjusted size
+  width: 50px; // Adjusted size
   height: 50px; // Adjusted size
   cursor: pointer;
   outline: none;
@@ -69,7 +69,6 @@ const DropdownItem = styled.div`
   }
 `;
 
-
 const users = [
   {
     name: "John Doe",
@@ -77,7 +76,8 @@ const users = [
   },
   {
     name: "Jane Smith",
-    image: "/path/to/jane-image.jpg",
+    image:
+      "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg",
   },
   // ... add more users
 ];
@@ -90,6 +90,19 @@ const Home = () => {
   const [forceSwipeDirection, setForceSwipeDirection] = useState<
     "Left" | "Right" | undefined
   >(undefined);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const userProfile: UserProfile = {
+    name: "Jane Doe",
+    image: "/path/to/jane-doe-image.jpg",
+    location: "New York, USA",
+    birthday: "January 1, 1990",
+    skills: ["JavaScript", "React"],
+    education: "Computer Science at XYZ University",
+    experiences: ["Software Developer at ABC Corp"],
+    projects: ["Project A", "Project B"],
+    awards: ["Best Developer 2020"],
+  };
 
   const onSwiped = (direction: string) => {
     if (direction === "Left" || direction === "Right") {
@@ -128,11 +141,16 @@ const Home = () => {
     >
       <Navbar>
         <ProfileButton onClick={() => setDropdownOpen(!dropdownOpen)}>
-          <ProfileImage src="/path/to/jane-doe-image.jpg" alt="Jane Doe" />
+          <ProfileImage
+            src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
+            alt="Jane Doe"
+          />
           Jane Doe
         </ProfileButton>
         <Dropdown isOpen={dropdownOpen}>
-          <DropdownItem>View Profile</DropdownItem>
+          <DropdownItem onClick={() => setIsProfileModalOpen(true)}>
+            View Profile
+          </DropdownItem>
           <DropdownItem>Logout</DropdownItem>
         </Dropdown>
       </Navbar>
@@ -156,6 +174,12 @@ const Home = () => {
           <span style={{ color: "white " }}>✓</span>
         </SwipeButton>
       </ButtonContainer>
+      {isProfileModalOpen && (
+        <ProfileModal
+          user={userProfile}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

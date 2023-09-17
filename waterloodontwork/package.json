@@ -13,14 +13,12 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "framer-motion": "^10.16.4",
-    "next": "13.4.19",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-swipeable": "^7.0.1",
-    "styled-components": "^6.0.8",
     "next": "^13.4.19",
+    "polished": "^4.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-swipeable": "^7.0.1",
+    "styled-components": "^6.0.8",
     "typescript": "5.2.2"
   }
 }
