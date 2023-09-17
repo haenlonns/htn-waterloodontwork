@@ -1,4 +1,4 @@
-from manageJobPosting import deleteJob
+from manageJob import createJob, deleteJob
 
 def createEmployer(db, employerData) -> str:
     employers = db.employers
@@ -19,9 +19,16 @@ def deleteEmployer(db, employerID) -> None:
     
     employers.delete_one({"_id": employerID})
 
-def addJob(db, employerID, jobID) -> None:
+def getEmployer(db, employerID):
     employers = db.employers
+    return employers.find_one({"_id": employerID})
+
+def addJob(db, jobData, employerID) -> None:
+    employers = db.employers
+    jobID = createJob(db, jobData, employerID)
     employers.update_one({"_id": employerID}, {"$push": {"jobs": jobID}})
+
+    return jobID
 
 def removeJob(db, employerID, jobID) -> None:
     employers = db.employers
