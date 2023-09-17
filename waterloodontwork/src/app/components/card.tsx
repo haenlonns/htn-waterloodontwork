@@ -3,19 +3,14 @@ import styled from "styled-components";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-
-type CardProps = {
-  image: string;
-  name: string;
-  onSwiped: (direction: "Left" | "Right") => void; // Add this line
-};
+import { useEffect } from "react";
 
 const CardArea = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 `;
 
 const CardWrapper = styled.div`
@@ -40,16 +35,47 @@ const Name = styled.h2`
 `;
 // ... other imports ...
 
-const Card: React.FC<CardProps> = ({ image, name, onSwiped }) => {
-  const [exitDirection, setExitDirection] = useState<number | null>(null);
+type CardProps = {
+  image: string;
+  name: string;
+  onSwiped: (direction: "Left" | "Right") => void;
+  exitDirection?: number; // New prop
+  forceSwipe?: "Left" | "Right"; // New prop
+};
+
+const Card: React.FC<CardProps> = ({
+  image,
+  name,
+  onSwiped,
+  exitDirection,
+  forceSwipe,
+}) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [animationState, setAnimationState] = useState("enter");
+
+  useEffect(() => {
+    if (forceSwipe) {
+      if (forceSwipe === "Left") {
+        setAnimationState("exitLeft");
+      } else {
+        setAnimationState("exitRight");
+      }
+    }
+  }, [forceSwipe]);
+
+  const animationVariants = {
+    enter: { opacity: 1, y: 0 },
+    exitLeft: { opacity: 0, x: -1000 },
+    exitRight: { opacity: 0, x: 1000 },
+  };
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      setExitDirection(-1); // left swipe: move card to the left
+      setAnimationState("exitLeft");
       setTimeout(() => onSwiped("Left"), 500);
     },
     onSwipedRight: () => {
-      setExitDirection(1); // right swipe: move card to the right
+      setAnimationState("exitRight");
       setTimeout(() => onSwiped("Right"), 500);
     },
     trackMouse: true,
@@ -57,10 +83,8 @@ const Card: React.FC<CardProps> = ({ image, name, onSwiped }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 1, x: 0 }}
-      animate={
-        exitDirection !== null ? { x: exitDirection * 1000, opacity: 0 } : {}
-      }
+      initial={{ opacity: 0, y: 20 }}
+      animate={animationVariants[animationState]}
       transition={{ duration: 0.5 }}
       {...handlers}
     >
