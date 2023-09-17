@@ -206,7 +206,7 @@ initializeColors();
               }
             />
           ) : (
-            <span>{editedUser.name}</span>
+            <h2>{editedUser.name}</h2>
           )}
         </div>
         <div>
@@ -220,6 +220,22 @@ initializeColors();
             />
           ) : (
             <span>{editedUser.location}</span>
+          )}
+        </div>
+        <div>
+          {isEditing ? (
+            <EditableInput
+              type="text"
+              value={editedUser.education}
+              onChange={(e) =>
+                setEditedUser((prev) => ({
+                  ...prev,
+                  education: e.target.value,
+                }))
+              }
+            />
+          ) : (
+            <span>{editedUser.education}</span>
           )}
         </div>
         <div>
@@ -253,12 +269,16 @@ initializeColors();
             </>
           ) : (
             skills.map((skill) => (
-              <SkillBlock key={skill} color={skillColorsRef.current[skill] || "#ccc"}>
+              <SkillBlock
+                key={skill}
+                color={skillColorsRef.current[skill] || "#ccc"}
+              >
                 {skill}
               </SkillBlock>
             ))
           )}
         </div>
+
         {/* Add similar blocks for location, birthday, skills, etc. */}
 
         {isEditing && <SaveButton onClick={handleSave}>Save</SaveButton>}

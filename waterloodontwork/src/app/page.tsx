@@ -94,9 +94,9 @@ const Home = () => {
 
   const userProfile: UserProfile = {
     name: "Jane Doe",
-    image: "/path/to/jane-doe-image.jpg",
+    image:
+      "https://img.freepik.com/free-photo/businesswoman-executive-professional-success-concept_53876-137644.jpg?w=2000",
     location: "New York, USA",
-    birthday: "January 1, 1990",
     skills: ["JavaScript", "React"],
     education: "Computer Science at XYZ University",
     experiences: ["Software Developer at ABC Corp"],
