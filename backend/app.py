@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
-import bson
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from decouple import config
+import bson
 
 import manageApplicants
 import manageJob
@@ -12,7 +11,7 @@ import manageEmployer
 import manageResponses
 import tools
 
-uri = "mongodb+srv://our-first-user:1sJ4VFKtpAss1eEZ@cluster0.za0rs94.mongodb.net/waterloodontwork?retryWrites=true&w=majority"
+uri = config("MONGODB_URI")
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.waterloodontwork
 
