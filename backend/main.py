@@ -1,8 +1,9 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-from employers import manageEmployer
 import manageApplicants
+import manageJobPosting
+import manageEmployer
 
 uri = "mongodb+srv://our-first-user:1sJ4VFKtpAss1eEZ@cluster0.za0rs94.mongodb.net/waterloodontwork?retryWrites=true&w=majority"
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -13,22 +14,47 @@ except Exception as e:
     print(e)
 
 db = client.waterloodontwork
-jobs = db.jobs
-employers = db.employers
 
-job = {
-    "company": "Apple",
+applicantA = {
+    "name": "John Doe",
+    "location": "Waterloo, ON",
+    "birthday": "January 1, 2000",
+    "skills": ["C/C++", "Python"],
+    "education": ["BCS University of Waterloo"],
+    "experiences": ["Intern @ Facebook"],
+    "projects": ["Cured Cancer"],
+    "awards": [],
+    "jobList": [],
+    "appliedList": []
+}
+
+companyA = {
+    "employer": "Apple",
+    "verification": "tim.cook@apple.com",
+    "description": "A Small Indie Tech Company",
+    "website": "apple.com",
+    "socials": ["LinkedIn"],
+    "jobs": []
+}
+
+jobA = {
+    "employer": "Apple",
     "position": "SWE Intern Winter 2024",
     "description": "lorem ipsum",
-    "qualifications": ["Swift, C/C++, Pursuing Bachelors in CS"],
-    "prior internships": 3,
+    "skills": ["Swift, C/C++"],
+    "qualifications": "lorem ipsum",
+    "cutoff": 0,
+    "responseTime": 14,
+    "applicants": []
 }
-job_id = jobs.insert_one(job).inserted_id
 
-employerA = manageEmployer.createEmployer("Apple", "dummy@gmail.com", "Small Indie Tech Company", "apple.com", [], [job_id])
-employer_id = employers.insert_one(employerA).inserted_id
-employerA = manageEmployer.createEmployer("Tangerine", "dummy@gmail.com", "Small Indie Tech Company", "apple.com", [], [job_id])
-employers.replace_one({"_id": employer_id}, employerA)
+applicantAID = manageApplicants.createApplicant(db, applicantA)
+companyAID = manageEmployer.createEmployer(db, companyA)
+jobAID = manageJobPosting.createJob(db, jobA, companyAID)
 
-print(job_id)
-print(employer_id)
+manageApplicants.writeJobList(db, applicantID=applicantAID, jobIDList=[jobAID])
+manageEmployer.addJob(db, employerID=companyAID, jobID=jobAID)
+
+manageApplicants.applyJob(db, applicantAID, jobAID)
+
+client.close()
