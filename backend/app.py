@@ -67,7 +67,7 @@ def getJobData():
     jobID = manageEmployer.addJob(db, jobData, employerID)
     return jobID
 
-@app.route("/employer/getResponse", methods=["GET"])]
+@app.route("/employer/getResponse", methods=["GET"])
 def postResponseData():
     responseID = request.data.decode('utf-8')
     responseData = manageResponses.getResponse(db, responseID)
