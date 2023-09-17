@@ -5,10 +5,6 @@ def createEmployer(db, employerData) -> str:
     employerID = employers.insert_one(employerData).inserted_id
     return employerID
 
-def updateEmployer(db, employerID, employerData) -> None:
-    employers = db.employers
-    employers.replace_one({"_id": employerID}, employerData, upsert=True)
-
 def deleteEmployer(db, employerID) -> None:
     employers = db.employers
     employer = employers.find_one({"_id": employerID})

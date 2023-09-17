@@ -28,23 +28,31 @@ def getApplicantData():
     applicantData = bson.loads(bsonData)
     applicantID = manageApplicants.createApplicant(db, applicantData)
     manageApplicants.writeJobList(db, applicantID)
-    return jsonify(applicantID)
+    return applicantID
 
-@app.route("/api/postEmployer", methods=["POST", "GET"])
+@app.route("/api/postEmployer", methods=["POST"])
 def getEmployerData():
     bsonData = request.data
     employerData = bson.loads(bsonData)
     employerID = manageEmployer.createEmployer(db, employerData)
-    return jsonify(employerID)
+    return employerID
 
-@app.route("/api/postJob", methods=["POST", "GET"])
+@app.route("/api/postJob", methods=["POST"])
 def getJobData():
     bsonData = request.data
     designaledData = bson.loads(bsonData)
     jobData = designaledData["jobData"]
     employerID = designaledData["employerID"]
     jobID = manageEmployer.addJob(db, jobData, employerID)
-    return jsonify(jobID)
+    return jobID
+
+@app.route("/api/getJob", methods=["GET"])
+def postJobData():
+    jobID = request.data.decode('utf-8')
+    jobData = manageJob.getJob(db, jobID)
+    return jsonify(jobData)
+
+@app.route("/api/applyJob", methods=["POST"])
 
 if __name__ == '__main__':
     app.run(debug=True)

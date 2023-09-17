@@ -1,13 +1,10 @@
-# Should be called as an API from Front-end
+import manageResponses
+
 def createApplicant(db, applicantData) -> str:
     applicants = db.applicants
     applicantID = applicants.insert_one(applicantData).inserted_id
     applicants.update_one({"_id": applicantID}, {"$set": {"jobList": []}}, upsert=True)
     return applicantID
-
-def updateApplicant(db, applicantID, applicantData) -> None:
-    applicants = db.applicants
-    applicants.replace_one({"_id": applicantID}, applicantData, upsert=True)
 
 def deleteApplicant(db, applicantID) -> None:
     applicants = db.applicants
@@ -50,9 +47,12 @@ def writeJobList(db, applicantID) -> None:
     
     applicants.update_one({"_id": applicantID}, {"$set": {"jobList": applicantJobList}})
 
-def applyJob(db, applicantID, jobID) -> None:
+def applyJob(db, responseData, applicantID, jobID) -> None:
     applicants = db.applicants
     jobs = db.jobs
+
+    responseID = manageResponses.createResponse(db, responseData, applicantID, jobID)
+    applicants.update_one({"_id": applicantID}, {"$push": {"responseList": responseID}})
 
     applicants.update_one({"_id": applicantID}, {"$push": {"appliedList": jobID}})
     applicants.update_one({"_id": applicantID}, {"$pull": {"jobList": jobID}})
@@ -71,6 +71,12 @@ def rejectJob(db, applicantID, jobID) -> None:
 def withdrawJob(db, applicantID, jobID) -> None:
     applicants = db.applicants
     jobs = db.jobs
+
+    job = jobs.find_one({"_id": jobID})
+    responseIDSet = job["responses"]
+
+    applicant = applicants.find_one({"_id": applicantID})
+    applicantResponseIDSet = applicant["responseList"]
 
     applicants.update_one({"_id": applicantID}, {"$pull": {"appliedList": jobID}})
     applicants.update_one({"_id": applicantID}, {"$push": {"jobList": jobID}})

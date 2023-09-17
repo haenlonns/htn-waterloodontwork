@@ -4,10 +4,6 @@ def createJob(db, jobData, employerID) -> str:
     jobs.update_one({"_id": jobID}, {"$set": {"employerID": employerID}})
     return jobID
 
-def updateJob(db, jobID, jobData) -> None:
-    jobs = db.jobs
-    jobs.replace_one({"_id": jobID}, jobData, upsert=True)
-
 def deleteJob(db, jobID) -> None:
     jobs = db.jobs
     job = jobs.find_one({"_id": jobID})
