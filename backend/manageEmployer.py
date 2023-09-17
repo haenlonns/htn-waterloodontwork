@@ -30,5 +30,4 @@ def removeJob(db, employerID, jobID) -> None:
     employers = db.employers
     employers.update_one({"_id": employerID}, {"$pull": {"jobs": jobID}})
     deleteJob(db, jobID)
-
     

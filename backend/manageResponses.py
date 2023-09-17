@@ -21,7 +21,7 @@ def deleteResponse(db, responseID) -> None:
     applicantID = response["applicantID"]
     jobID = response["jobID"]
 
-    applicants.update({"_id": applicantID}, {"$pull": {"responses": responseID}})
+    applicants.update_one({"_id": applicantID}, {"$pull": {"responses": responseID}})
     jobs.update_one({"_id": jobID}, {"$pull": {"responses": responseID}})
 
     responses.delete_one({"_id": responseID})
@@ -29,3 +29,7 @@ def deleteResponse(db, responseID) -> None:
 def getResponse(db, responseID):
     responses = db.responses
     return responses.find_one({"_id": responseID})
+
+def decideResponse(db, responseID, decision):
+    responses = db.responses
+    responses.update_one({"_id": responseID}, {"$set": {"status": decision}})

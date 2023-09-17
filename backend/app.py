@@ -24,7 +24,6 @@ def close_mongodb_connection(exception=None):
     client.close()
 
 
-
 @app.route("/applicant/postApplicant", methods=["POST", "GET"])
 def getApplicantData():
     bsonData = request.data
@@ -50,7 +49,6 @@ def applyJob():
     return applicantID
 
 
-
 @app.route("/employer/postEmployer", methods=["POST"])
 def getEmployerData():
     bsonData = request.data
@@ -67,11 +65,23 @@ def getJobData():
     jobID = manageEmployer.addJob(db, jobData, employerID)
     return jobID
 
-@app.route("/employer/getResponse", methods=["GET"])
+@app.route("/employer/postDecision", methods=["POST"])
+def getDecisionData():
+    bsonData = request.data
+    designaledData = bson.loads(bsonData)
+
+    responseID = designaledData["responseID"]
+    decision = designaledData["decision"]
+
+    manageResponses.decideResponse(db, responseID, decision)
+
+
+@app.route("/general/getResponse", methods=["GET"])
 def postResponseData():
     responseID = request.data.decode('utf-8')
     responseData = manageResponses.getResponse(db, responseID)
     return jsonify(responseData)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
