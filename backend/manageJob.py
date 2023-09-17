@@ -23,3 +23,7 @@ def deleteJob(db, jobID) -> None:
         applicants.update_one({"_id": applicantID}, {"$pull": {"appliedList": jobID}})
 
     jobs.delete_one({"_id": jobID})
+
+def getJob(db, jobID):
+    jobs = db.jobs
+    return jobs.find_one({"_id": jobID})

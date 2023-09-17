@@ -23,8 +23,14 @@ def deleteApplicant(db, applicantID) -> None:
 
     applicants.delete_one({"_id": applicantID})
 
-def writeJobList(db, applicantID, jobIDList: list[str]) -> None:
+def getApplicant(db, applicantID):
+    applicants = db.applicants
+    return applicants.find_one({"_id": applicantID})
+
+def writeJobList(db, applicantID) -> None:
     jobs = db.jobs
+    aggregateList = list(jobs.aggregate([{"$project": {"_id": 1}}]))
+    jobIDList = [job["_id"] for job in aggregateList]
     applicants = db.applicants
     applicant = applicants.find_one({"_id": applicantID})
     applicantJobList = []
